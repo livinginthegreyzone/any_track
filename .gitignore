@@ -9,3 +9,4 @@
 peda-session*.*
 /.testing/
 /.dir-locals.el
+/config/bot.token
