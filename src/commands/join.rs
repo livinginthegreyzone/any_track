@@ -18,8 +18,18 @@ pub async fn run(
                 let manager = songbird::get(ctx)
                     .await
                     .expect("Songbird voice client placed in at initialization.");
-                let _handler = manager.join(guild_id, channel_id).await;
-                Some("joined voice channel".to_string())
+                let (handler, handler_join_error) = manager.join(guild_id, channel_id).await;
+                if let Err(err) = handler_join_error {
+                    eprintln!("error: failed to join voice channel due to \"{}\"", err);
+                    return Some("Failed to join voice channel".to_string());
+                }
+                let mut handler = handler.lock().await;
+                if let Err(err) = handler.deafen(true).await {
+                    eprintln!("error: failed to deafen due to \"{}\"", err);
+                    Some("joined voice channel but unable to deafen".to_string())
+                } else {
+                    Some("joined voice channel".to_string())
+                }
             }
             Some(None) => {
                 eprintln!("error: not in voice channel");
