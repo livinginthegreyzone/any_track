@@ -8,3 +8,4 @@ edition = "2021"
 [dependencies]
 tokio = { version = "1", features = ["full"] }
 serenity = { version = "0.11", default-features = false, features = ["client", "gateway", "rustls_backend", "model", "cache"] }
+songbird = "0.3"

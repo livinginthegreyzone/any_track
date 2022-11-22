@@ -1,5 +1,6 @@
 use any_track::Handler;
 use serenity::{prelude::GatewayIntents, Client};
+use songbird::SerenityInit;
 
 #[tokio::main]
 async fn main() {
@@ -9,9 +10,13 @@ async fn main() {
 
     let mut client = Client::builder(
         token,
-        GatewayIntents::GUILD_MESSAGES | GatewayIntents::MESSAGE_CONTENT,
+        GatewayIntents::GUILD_MESSAGES
+            | GatewayIntents::MESSAGE_CONTENT
+            | GatewayIntents::GUILD_VOICE_STATES
+            | GatewayIntents::non_privileged(),
     )
     .event_handler(Handler)
+    .register_songbird()
     .await
     .expect("Error creating client");
 

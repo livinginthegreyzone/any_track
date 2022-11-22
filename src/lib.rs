@@ -23,7 +23,9 @@ impl EventHandler for Handler {
 
         for guild_id in ctx.cache.guilds().iter() {
             let commands = GuildId::set_application_commands(guild_id, &ctx.http, |commands| {
-                commands.create_application_command(|command| commands::ping::register(command))
+                commands
+                    .create_application_command(|command| commands::ping::register(command))
+                    .create_application_command(|command| commands::join::register(command))
             })
             .await;
 
@@ -38,20 +40,23 @@ impl EventHandler for Handler {
         if let Interaction::ApplicationCommand(command) = interaction {
             println!("info: received command interaction: {:#?}", command);
 
-            let content = match command.data.name.as_str() {
-                "ping" => commands::ping::run(&command.data.options),
-                _ => "not implemented :(".to_string(),
+            let message = match command.data.name.as_str() {
+                "atping" => Some(commands::ping::run(&command.data.options)),
+                "atjoin" => commands::join::run(&command, &ctx).await,
+                _ => Some("not implemented :(".to_string()),
             };
 
-            if let Err(why) = command
-                .create_interaction_response(&ctx.http, |response| {
-                    response
-                        .kind(InteractionResponseType::ChannelMessageWithSource)
-                        .interaction_response_data(|message| message.content(content))
-                })
-                .await
-            {
-                println!("Cannot respond to slash command: {}", why);
+            if let Some(content) = message {
+                if let Err(why) = command
+                    .create_interaction_response(&ctx.http, |response| {
+                        response
+                            .kind(InteractionResponseType::ChannelMessageWithSource)
+                            .interaction_response_data(|message| message.content(content))
+                    })
+                    .await
+                {
+                    println!("Cannot respond to slash command: {}", why);
+                }
             }
         }
     }
