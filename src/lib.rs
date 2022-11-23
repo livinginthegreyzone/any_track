@@ -27,6 +27,7 @@ impl EventHandler for Handler {
                     .create_application_command(|command| commands::ping::register(command))
                     .create_application_command(|command| commands::join::register(command))
                     .create_application_command(|command| commands::leave::register(command))
+                    .create_application_command(|command| commands::play::register(command))
             })
             .await;
 
@@ -45,6 +46,7 @@ impl EventHandler for Handler {
                 "atping" => Some(commands::ping::run(&command.data.options)),
                 "atjoin" => commands::join::run(&command, &ctx).await,
                 "atleave" => commands::leave::run(&command, &ctx).await,
+                "atplay" => commands::play::run(&command, &ctx).await,
                 _ => Some("not implemented :(".to_string()),
             };
 
