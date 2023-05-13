@@ -16,7 +16,7 @@ pub async fn run(
         if let Some(handler_lock) = manager.get(guild_id) {
             let url = command.data.options.iter().find_map(|option| {
                 (option.name == "url")
-                    .then(|| ())
+                    .then_some(())
                     .and(option.value.as_ref())
                     .and_then(|value| value.as_str())
             });
